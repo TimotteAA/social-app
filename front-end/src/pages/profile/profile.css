@@ -1,0 +1,89 @@
+.profile-container {
+  display: flex;
+}
+
+.profile-right {
+  flex: 9;
+}
+
+.profile-right-top {
+  flex: 3;
+}
+
+.profile-right-bottom {
+  display: flex;
+}
+
+.profile-cover {
+  height: 320px;
+  position: relative;
+}
+
+.profile-cover-img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.profile-user-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  top: 150px;
+  border: 3px solid white;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-info-name {
+  font-size: 24px;
+}
+
+.profile-info-desc {
+  font-weight: 350;
+  font-size: 16px;
+}
+
+.change-profile-info-btn-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.change-profile-info-btn {
+  border: none;
+  color: white;
+  background-color: #1872ef;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.change-profile-info {
+  flex: 5;
+  padding: 20px;
+  flex-direction: column;
+}
+
+.change-item {
+  margin-bottom: 15px;
+  padding: 5px;
+  border: 3px solid #1872ef;
+  color: black;
+  font-weight: 300;
+}
+
+.file {
+  cursor: pointer;
+}
