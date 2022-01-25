@@ -47,19 +47,6 @@ const verifyLogin = async (ctx, next) => {
 const verifyAuth = async (ctx, next) => {
   // 验证token
   console.log("验证登录、授权的middleware");
-  // 1.先拿到token
-  // console.log(ctx.request.headers); // 没传入token?
-
-  // const { authorization } = ctx.request.headers;
-  // // 2.登陆时没携带token
-  // // console.log(authorization);
-  // if (authorization === undefined) {
-  //   // console.log(authorization);
-  //   ctx.response.status = 401;
-  //   ctx.response.body = "不能识别该用户";
-  //   return;
-  // }
-  // const token = authorization.replace("Bearer ", "");
 
   // 这里的代码把token放到了cookie里
   const token = ctx.cookies.get("token");
@@ -70,43 +57,36 @@ const verifyAuth = async (ctx, next) => {
       algorithms: ["RS256"],
     });
   } catch (err) {
+    console.log(111);
     ctx.response.status = 401;
     ctx.response.body = "无效的用户！";
     return;
   }
   // console.log(result);
   // 判断id与要修改的id是否一致
-  const { id } = result;
-  // console.log(result.id, ctx.request.params.id);
-  if (id !== +ctx.request.params.id) {
-    ctx.response.status = 401;
-    ctx.response.body = "不能修改、删除它人的账户！";
-    return;
-  }
 
   ctx.result = result;
   await next();
 };
 
-const verifyAuthForFollow = async (ctx, next) => {
-  // 验证token
-  console.log("验证登录、授权的middleware");
-
-  const token = ctx.cookies.get("token");
-
-  let result;
+const verifyRefreshToken = async (ctx, next) => {
+  const { token } = ctx.request.body;
   try {
     result = jwt.verify(token, PUBLIC_KEY, {
       algorithms: ["RS256"],
     });
+    ctx.response.status = 200;
+    ctx.response.body = {
+      isExpired: false,
+      msg: "refreshToken有效",
+    };
   } catch (err) {
     ctx.response.status = 401;
-    ctx.response.body = "无效的用户！";
-    return;
+    ctx.response.body = {
+      isExpired: true,
+      msg: "refreshToken无效",
+    };
   }
-
-  ctx.result = result;
-  await next();
 };
 
 const verifyPermission = (tableName) => async (ctx, next) => {
@@ -132,6 +112,6 @@ module.exports = {
   handlePassword,
   verifyLogin,
   verifyAuth,
-  verifyAuthForFollow,
   verifyPermission,
+  verifyRefreshToken,
 };

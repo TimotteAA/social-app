@@ -5,15 +5,15 @@ import { RssFeed } from "@mui/icons-material";
 
 import CloseFriend from "../close-friend/CloseFriend";
 import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
-import { host } from "../../config";
+
+import request from "../../service/request";
 
 export default memo(function Sidebar() {
   const [friends, setFriends] = useState([]);
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    axios.get(`${host}/api/users/friends/${user?.id}`).then((res) => {
+    request.get(`/api/users/friends/${user?.id}`).then((res) => {
       setFriends(res.data);
     });
   }, [user?.id]);

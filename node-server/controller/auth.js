@@ -12,7 +12,9 @@ const {
   searchUser,
 } = require("../service/user-service");
 const { md5password } = require("../utils/password-handle");
-const { PRIVATE_KEY } = require("../common/config");
+const { PUBLIC_KEY, PRIVATE_KEY } = require("../common/config");
+
+let refreshTokens = [];
 
 class UserController {
   async createUser(ctx, next) {
@@ -27,27 +29,94 @@ class UserController {
     }
   }
 
-  async login(ctx, next) {
-    const { id, username } = ctx.user;
-    const token = jwt.sign({ id, username }, PRIVATE_KEY, {
-      expiresIn: 60 * 60 * 60 * 24 * 1000 * 365,
+  async logout(ctx, next) {
+    const { refreshToken } = ctx.request.body;
+    refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+
+    console.log(refreshTokens);
+    ctx.response.body = "退出成功";
+  }
+
+  async refreshToken(ctx, next) {
+    const refreshToken = ctx.request.body.token;
+    const { id, username } = ctx.request.body;
+
+    // send error if there is no token or it's invalid
+    if (!refreshToken) {
+      ctx.response.status = 401;
+      ctx.response.body = "没有携带token";
+    }
+
+    if (!refreshTokens.includes(refreshToken)) {
+      console.log(refreshTokens);
+      ctx.response.status = 403;
+      ctx.response.body = "Refresh token is not valid";
+      return;
+    }
+
+    refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+
+    const newAccessToken = jwt.sign({ id, username }, PRIVATE_KEY, {
+      expiresIn: "30s",
       algorithm: "RS256",
     });
 
-    // const { username } = ctx.request.body;
+    const newRefreshToken = jwt.sign({ id, username }, PRIVATE_KEY, {
+      expiresIn: "30 days",
+      algorithm: "RS256",
+    });
 
-    // 把token放到cookie里的测试
-    ctx.cookies.set("token", token);
-    // , {
-    //   maxAge: 60 * 60 * 24 * 365,
-    // }
+    refreshTokens.push(newRefreshToken);
+
+    ctx.cookies.set("token", newAccessToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      // overwrite: true,
+    });
+    console.log(refreshTokens, 222);
     const result = await getUserById(id);
     const followings = await getPeopleYouFollowsById(id);
     result.followings = followings;
-    ctx.response.body = result;
+    ctx.response.body = { ...result, refreshToken: newRefreshToken };
+    // 删除原有的两个token，生成新的token
+  }
+
+  async login(ctx, next) {
+    const { id, username } = ctx.user;
+    const accessToken = jwt.sign({ id, username }, PRIVATE_KEY, {
+      expiresIn: "30s",
+      algorithm: "RS256",
+    });
+
+    ctx.cookies.set("token", accessToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      // overwrite: true,
+    });
+
+    const refreshToken = jwt.sign({ id, username }, PRIVATE_KEY, {
+      expiresIn: "30 days",
+      algorithm: "RS256",
+    });
+
+    const result = await getUserById(id);
+    const followings = await getPeopleYouFollowsById(id);
+    refreshTokens.push(refreshToken);
+    console.log(refreshTokens);
+    result.followings = followings;
+    ctx.set("Access-Control-Allow-Credentials", true);
+    ctx.response.body = { ...result, refreshToken: refreshToken };
   }
 
   async update(ctx, next) {
+    const { id } = ctx.result;
+    // console.log(result.id, ctx.request.params.id);
+    if (id !== +ctx.request.params.id) {
+      ctx.response.status = 401;
+      ctx.response.body = "不能修改、删除它人的账户！";
+      return;
+    }
+
     let {
       username,
       email,
@@ -66,7 +135,6 @@ class UserController {
       hometown,
       relationship
     );
-    const { id } = ctx.result;
 
     try {
       if (username) {
@@ -109,7 +177,14 @@ class UserController {
   }
 
   async deleteUserCon(ctx, next) {
-    const id = ctx.params.id;
+    const { id } = result;
+    // console.log(result.id, ctx.request.params.id);
+    if (id !== +ctx.request.params.id) {
+      ctx.response.status = 401;
+      ctx.response.body = "不能修改、删除它人的账户！";
+      return;
+    }
+
     try {
       const result = await deleteUser(id);
       ctx.response.body = result;

@@ -3,11 +3,12 @@ import "./post.css";
 // import { useLocation } from "react-router-dom";
 import { MoreVert, WindowRounded } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import axios from "axios";
+
 import { format } from "timeago.js";
 import { AuthContext } from "../../context/AuthContext";
 
-import { PF, host } from "../../config";
+import { PF } from "../../config";
+import request from "../../service/request";
 
 export default memo(function Post(props) {
   const { post } = props;
@@ -24,10 +25,10 @@ export default memo(function Post(props) {
   // console.log(post);
 
   useEffect(() => {
-    axios.get(`${host}/api/users/${post.user_id}`).then((res) => {
+    request.get(`/api/users/${post.user_id}`).then((res) => {
       setUser(res.data);
     });
-    axios.get(`${host}/api/moment/${post.id}`).then((res) => {
+    request.get(`/api/moment/${post.id}`).then((res) => {
       // console.log(res.data);
       // console.log(res.data[0].peopleLiked);
       if (res.data[0].peopleLiked[0].id !== null) {
@@ -45,7 +46,7 @@ export default memo(function Post(props) {
 
   const likeHandle = () => {
     try {
-      axios.put(`${host}/api/moment/${post.id}/like`).then((res) => {
+      request.put(`/api/moment/${post.id}/like`).then((res) => {
         // console.log(res.data);
         setLikeMessage(res.data);
       });
@@ -54,7 +55,7 @@ export default memo(function Post(props) {
 
   const handleDelete = () => {
     // console.log("監聽到了刪除事件");
-    axios.delete(`${host}/api/moment/${post.id}`).then((res) => {
+    request.delete(`/api/moment/${post.id}`).then((res) => {
       // console.log(res);
       window.location.reload();
     });

@@ -4,8 +4,9 @@ import "./topbar.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
-import { PF, host } from "../../config";
+
+import request from "../../service/request";
+import { PF } from "../../config";
 import { debounce } from "../../utils/debounce";
 
 // const PF = "http://localhost:8000/assets/";
@@ -18,6 +19,10 @@ export default memo(function Topbar() {
   const navigate = useNavigate();
 
   const handleLogOut = () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    request.post(`/api/auth/logout`, {
+      refreshToken,
+    });
     dispatch({ type: "LOG_OUT" });
     // 退出后，回到首页
     navigate("/");
@@ -28,15 +33,13 @@ export default memo(function Topbar() {
       setUsers([]);
       return;
     }
-    axios
-      .get(`${host}/api/users/search/${search.current.value}`)
-      .then((res) => {
-        if (res.data.length) {
-          setUsers(res.data);
-        } else {
-          setUsers([]);
-        }
-      });
+    request.get(`/api/users/search/${search.current.value}`).then((res) => {
+      if (res.data.length) {
+        setUsers(res.data);
+      } else {
+        setUsers([]);
+      }
+    });
   }, 100);
 
   // console.log(users);

@@ -5,9 +5,9 @@ import { Add, Remove } from "@mui/icons-material";
 
 import Online from "../online/Online";
 import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
 
-import { PF, host } from "../../config";
+import { PF } from "../../config";
+import request from "../../service/request";
 
 const mapping = new Map();
 mapping.set(0, "单身").set(1, "结婚了").set(2, "未知");
@@ -30,7 +30,7 @@ export default memo(function Rightbar(props) {
   }, [currentUser, user?.id]);
   // console.log(followed);
   useEffect(() => {
-    axios.get(`${host}/api/users/friends/${user?.id}`).then((res) => {
+    request.get(`/api/users/friends/${user?.id}`).then((res) => {
       setFriends(res.data);
     });
   }, [user?.id]);
@@ -38,11 +38,11 @@ export default memo(function Rightbar(props) {
   const handleClick = async () => {
     try {
       if (followed) {
-        await axios.delete(`${host}/api/users/${user.id}/unfollow`);
+        await request.delete(`/api/users/${user.id}/unfollow`);
         dispatch({ type: "UNFOLLOW", payload: { id: user?.id } });
         window.location.reload();
       } else {
-        await axios.put(`${host}/api/users/${user.id}/follow`);
+        await request.put(`/api/users/${user.id}/follow`);
         dispatch({ type: "FOLLOW", payload: { id: user?.id } });
         window.location.reload();
       }

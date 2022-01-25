@@ -1,8 +1,8 @@
 import React, { memo, useState, useEffect } from "react";
 import "./chatonline.css";
-import axios from "axios";
 
-import { PF, host } from "../../config";
+import { PF } from "../../config";
+import request from "../../service/request";
 
 export default memo(function Chatonline(props) {
   const { onlineUsers, currentUser, setCurrentChat } = props;
@@ -14,9 +14,7 @@ export default memo(function Chatonline(props) {
     // 获取当前用户的信息
     const getFriends = async () => {
       console.log(currentUser.id);
-      const res = await axios.get(
-        `${host}/api/users/friends/${currentUser.id}`
-      );
+      const res = await request.get(`/api/users/friends/${currentUser.id}`);
       setFriends(res.data);
     };
     getFriends();
@@ -41,8 +39,8 @@ export default memo(function Chatonline(props) {
 
   const handleClick = async (user) => {
     try {
-      const res = await axios.get(
-        `http://localhost:8000/api/conversations/find/${currentUser.id}/${user.id}`
+      const res = await request.get(
+        `api/conversations/find/${currentUser.id}/${user.id}`
       );
       setCurrentChat(res.data);
     } catch (err) {

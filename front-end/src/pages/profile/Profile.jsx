@@ -5,11 +5,12 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Feed from "../../components/feed/Feed";
 import Rightbar from "../../components/rightbar/Rightbar";
 import "./profile.css";
-import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import { PermMedia, Cancel } from "@mui/icons-material";
 
-import { PF, host } from "../../config";
+import { PF } from "../../config";
+
+import request from "../../service/request";
 
 export default memo(function Profile() {
   const [user, setUser] = useState({});
@@ -28,7 +29,7 @@ export default memo(function Profile() {
   const { user: currentUser, dispatch } = useContext(AuthContext);
 
   useEffect(() => {
-    axios.get(`${host}/api/users/${userId}`).then((res) => {
+    request.get(`/api/users/${userId}`).then((res) => {
       // console.log(res);
       setUser(res.data);
     });
@@ -40,14 +41,14 @@ export default memo(function Profile() {
     if (file) {
       let data = new FormData();
       data.append("profile", file);
-      await axios.post(`${host}/upload/profilePicture`, data);
+      await request.post(`/upload/profilePicture`, data);
     }
 
     if (file2) {
       let data = new FormData();
       data.append("cover", file2);
       console.log(data);
-      await axios.post(`${host}/upload/cover`, data);
+      await request.post(`/upload/cover`, data);
     }
 
     const newInfo = {};
@@ -72,7 +73,7 @@ export default memo(function Profile() {
     if (marry.current.value !== "") {
       newInfo.relationship = marry.current.value;
     }
-    const res = await axios.put(`${host}/api/users/${currentUser.id}`, newInfo);
+    const res = await request.put(`/api/users/${currentUser.id}`, newInfo);
 
     dispatch({ type: "CHANGE_INFO", payload: res.data });
     setIsShow(!isShow);

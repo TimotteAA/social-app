@@ -3,11 +3,9 @@ import { useParams } from "react-router-dom";
 import "./feed.css";
 import Share from "../share/Share";
 import Post from "../post/Post";
-import axios from "axios";
-import { AuthContext } from "../../context/AuthContext";
-import { host } from "../../config";
 
-axios.defaults.withCredentials = true;
+import { AuthContext } from "../../context/AuthContext";
+import request from "../../service/request";
 
 export default memo(function Feed(props) {
   // const { userId } = props;
@@ -23,7 +21,7 @@ export default memo(function Feed(props) {
   // console.log(posts);
   useEffect(() => {
     if (isInProfilepage) {
-      axios.get(`${host}/api/moment/timeline/all/${currentId}`).then((res) => {
+      request.get(`/api/moment/timeline/all/${currentId}`).then((res) => {
         let posts = [...res.data.currentUserComments];
         posts.sort((p1, p2) => {
           return new Date(p2.createAt) - new Date(p1.createAt);
@@ -31,7 +29,7 @@ export default memo(function Feed(props) {
         setPosts(posts);
       });
     } else {
-      axios.get(`${host}/api/moment/timeline/all/${userId}`).then((res) => {
+      request.get(`/api/moment/timeline/all/${userId}`).then((res) => {
         let posts = [...res.data.currentUserComments];
         if (res.data.followersComments && !url.startsWith("/profile")) {
           posts.push(...res.data.followersComments);

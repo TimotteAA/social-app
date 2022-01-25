@@ -1,8 +1,8 @@
 import React, { memo, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./register.css";
-import axios from "axios";
-import { host } from "../../config";
+
+import request from "../../service/request";
 
 export default memo(function Register() {
   const email = useRef();
@@ -23,7 +23,7 @@ export default memo(function Register() {
         email: email.current.value,
       };
       try {
-        await axios.post(`${host}/api/auth/register`, user);
+        await request.post(`api/auth/register`, user);
         navigate("/login");
       } catch (err) {
         console.log(err);

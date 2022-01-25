@@ -8,9 +8,9 @@ import {
   Cancel,
 } from "@mui/icons-material";
 import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
 
-import { PF, host } from "../../config";
+import request from "../../service/request";
+import { PF } from "../../config";
 
 export default memo(function Share() {
   const { user, dispatch } = useContext(AuthContext);
@@ -29,11 +29,11 @@ export default memo(function Share() {
     }
 
     try {
-      axios.post(`${host}/api/moment`, newPost).then((res) => {
+      request.post(`/api/moment`, newPost).then((res) => {
         const momentId = res.data.insertId;
         // console.log(momentId);
         if (file) {
-          axios.post(`${host}/upload/picture/${momentId}`, data).then((res) => {
+          request.post(`/upload/picture/${momentId}`, data).then((res) => {
             // console.log(res);
             window.location.reload();
           });

@@ -1,8 +1,5 @@
 const Router = require("koa-router");
-const {
-  verifyAuth,
-  verifyAuthForFollow,
-} = require("../middleware/auth-middleware");
+const { verifyAuth } = require("../middleware/auth-middleware");
 const {
   update,
   deleteUserCon,
@@ -26,15 +23,15 @@ router.delete("/:id", verifyAuth, deleteUserCon);
 router.get("/:id", getUserById);
 
 // follow a user
-router.put("/:id/follow", verifyAuthForFollow, follow);
+router.put("/:id/follow", verifyAuth, follow);
 
 // unfollow a user
-router.delete("/:id/unfollow", verifyAuthForFollow, unfollow);
+router.delete("/:id/unfollow", verifyAuth, unfollow);
 
 // 得到一个user的friends
 router.get("/friends/:userId", getFriends);
 
 // 搜索某个用户
-router.get("/search/:username", verifyAuthForFollow, search);
+router.get("/search/:username", verifyAuth, search);
 
 module.exports = router;

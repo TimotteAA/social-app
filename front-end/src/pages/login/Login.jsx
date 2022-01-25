@@ -43,9 +43,7 @@ export default memo(function Login() {
                 ref={password}
                 minLength="6"
               />
-              <button className="login-button">
-                {isFecthing ? "Loading" : "Log in"}
-              </button>
+              <button className="login-button">Log in</button>
               {/* <span className="login-forget">Forgot password</span> */}
               <Link
                 to="/register"

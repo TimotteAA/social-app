@@ -3,7 +3,7 @@ const Router = require("koa-router");
 const momentRouter = new Router({ prefix: "/api/moment" });
 
 const {
-  verifyAuthForFollow,
+  verifyAuth,
   verifyPermission,
 } = require("../middleware/auth-middleware");
 const {
@@ -24,7 +24,7 @@ const {
 // const { verifyLabelExists } = require("../middleware/label-middleware.js");
 
 // 发表评论：先登录，因此验证token，然后再create
-momentRouter.post("/", verifyAuthForFollow, create);
+momentRouter.post("/", verifyAuth, create);
 
 // 获取某条动态详情，包括动态的评论列表
 // momentRouter.get("/:momentId", detail);
@@ -34,29 +34,24 @@ momentRouter.post("/", verifyAuthForFollow, create);
 // 1.验证登录（授权） -> verifyAuth
 // 2.是否是发布动态的本身
 // 3.修改
-momentRouter.put(
-  "/:momentId",
-  verifyAuthForFollow,
-  verifyPermission("moment"),
-  update
-);
+momentRouter.put("/:momentId", verifyAuth, verifyPermission("moment"), update);
 // 删除某条动态：中间件类似
 momentRouter.delete(
   "/:momentId",
-  verifyAuthForFollow,
+  verifyAuth,
   verifyPermission("moment"),
   deleteMoment
 );
 
 // like、unlike某条动态
 // 可以点赞自己的动态
-momentRouter.put("/:momentId/like", verifyAuthForFollow, changeLike);
+momentRouter.put("/:momentId/like", verifyAuth, changeLike);
 
 // get a moment
 momentRouter.get("/:momentId", getMomentById);
 
 // get timeline moments
-momentRouter.get("/timeline/all/:userId", verifyAuthForFollow, getAllComments);
+momentRouter.get("/timeline/all/:userId", getAllComments);
 
 // // 获取多条动态，其中还包括评论的数量
 // momentRouter.get("/", list);
@@ -68,7 +63,7 @@ momentRouter.get("/timeline/all/:userId", verifyAuthForFollow, getAllComments);
 // // 还要把label的id给到下一个中间件
 // momentRouter.post(
 //   "/:momentId/labels",
-//   verifyAuthForFollow,
+//   verifyAuth,
 //   verifyPermission("moment"),
 //   verifyLabelExists,
 //   addLabels
@@ -78,7 +73,7 @@ momentRouter.get("/timeline/all/:userId", verifyAuthForFollow, getAllComments);
 // momentRouter.get("/labels/:momentId", getMomentLabels);
 
 // 获取单条动态的所有配图信息
-// momentRouter.get("/:momentId/pictures", verifyAuthForFollow, getMomentPictures);
+// momentRouter.get("/:momentId/pictures", verifyAuth, getMomentPictures);
 
 // 依据配图名，得到单张配图
 // momentRouter.get("/images/:filename", getFile);

@@ -6,10 +6,7 @@ const {
   coverHandler,
 } = require("../middleware/file-middleware");
 
-const {
-  verifyAuth,
-  verifyAuthForFollow,
-} = require("../middleware/auth-middleware");
+const { verifyAuth } = require("../middleware/auth-middleware");
 
 const {
   saveAvatarInfo,
@@ -25,23 +22,18 @@ const fileRouter = new Router({ prefix: "/upload" });
 // uploads/avatar
 // 1. 中间件保存图像
 // 2. 图像信息，属于哪个user、大小
-fileRouter.post(
-  "/profilePicture",
-  verifyAuthForFollow,
-  avatarHandler,
-  saveAvatarInfo
-);
+fileRouter.post("/profilePicture", verifyAuth, avatarHandler, saveAvatarInfo);
 
 // 动态配图
 fileRouter.post(
   "/picture/:momentId",
-  verifyAuthForFollow,
+  verifyAuth,
   pictureHandler,
   savePictureInfo
 );
 
 // profile的主页配图
-fileRouter.post("/cover", verifyAuthForFollow, coverHandler, saveCoverInfo);
+fileRouter.post("/cover", verifyAuth, coverHandler, saveCoverInfo);
 
 // savePictureInfo;
 module.exports = fileRouter;

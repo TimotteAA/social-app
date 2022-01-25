@@ -5,20 +5,20 @@ const {
   getConversationOfTwoUsers,
 } = require("../controller/conversation");
 
-const { verifyAuthForFollow } = require("../middleware/auth-middleware");
+const { verifyAuth } = require("../middleware/auth-middleware");
 
 const router = new Router({ prefix: "/api/conversations" });
 
 // new conv
-router.post("/", verifyAuthForFollow, createConversation);
+router.post("/", verifyAuth, createConversation);
 
 // get conv of a user
-router.get("/:userId", verifyAuthForFollow, getConversation);
+router.get("/:userId", verifyAuth, getConversation);
 
 // get conv of two users
 router.get(
   "/find/:firstUserId/:secondUserId",
-  verifyAuthForFollow,
+  verifyAuth,
   getConversationOfTwoUsers
 );
 

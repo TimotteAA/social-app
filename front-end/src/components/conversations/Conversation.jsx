@@ -1,8 +1,8 @@
 import React, { memo, useState, useEffect } from "react";
 import "./conversation.css";
-import axios from "axios";
 
-import { PF, host } from "../../config";
+import { PF } from "../../config";
+import request from "../../service/request";
 
 export default memo(function Conversation(props) {
   const { conversation, currentUser } = props;
@@ -17,7 +17,7 @@ export default memo(function Conversation(props) {
 
     const getUser = async (friendId) => {
       try {
-        const res = await axios.get(`${host}/api/users/${friendId}`);
+        const res = await request.get(`/api/users/${friendId}`);
         setUser(res.data);
       } catch (err) {
         console.log(err);

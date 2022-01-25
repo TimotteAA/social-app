@@ -4,9 +4,10 @@ const io = require("socket.io")(8900, {
   },
 });
 
+// 所有用户信息
 let users = [];
 
-// 过滤，socketId一直在变
+// 过滤，socketId一直在变，依据userId添加到users中。
 const addUser = (userId, socketId) => {
   if (!users.some((user) => user.userId === userId)) {
     users.push({ userId, socketId });
@@ -15,13 +16,9 @@ const addUser = (userId, socketId) => {
 
 // 监听io连接
 
-const removeUser = (socketId) => {
-  users = users.filter((user) => user.socketId !== socketId);
-};
-
 const getUser = (userId) => {
   return users.find((user) => user.userId === userId);
-};
+};                                                                                                                                                          
 
 // 监听连接
 io.on("connection", (socket) => {

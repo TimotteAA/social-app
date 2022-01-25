@@ -1,9 +1,9 @@
 import React, { memo, useState, useEffect } from "react";
 import { format } from "timeago.js";
 import "./message.css";
-import axios from "axios";
-import { PF, host } from "../../config";
 
+import { PF } from "../../config";
+import request from "../../service/request";
 // own類控制是否是自己發的消息
 
 export default memo(function Message({ own, message }) {
@@ -14,7 +14,7 @@ export default memo(function Message({ own, message }) {
 
     const getUser = async (friendId) => {
       try {
-        const res = await axios.get(`${host}/api/users/${friendId}`);
+        const res = await request.get(`/api/users/${friendId}`);
         setUser(res.data);
       } catch (err) {
         console.log(err);

@@ -5,8 +5,9 @@ import Topbar from "../../components/topbar/Topbar";
 import Message from "../../components/message/Message";
 import Chatonline from "../../components/chat-online/Chatonline";
 import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
-import { PF, host } from "../../config";
+
+import { PF } from "../../config";
+import request from "../../service/request";
 
 import { debounce } from "../../utils/debounce";
 
@@ -82,7 +83,7 @@ export default memo(function Messenger() {
   useEffect(() => {
     const getConversations = async () => {
       try {
-        const res = await axios(`${host}/api/conversations/${user.id}`);
+        const res = await request.get(`/api/conversations/${user.id}`);
         setConversations(res.data);
       } catch (err) {
         console.log(err);
@@ -95,7 +96,7 @@ export default memo(function Messenger() {
   useEffect(() => {
     const getMessages = async (currentChat) => {
       try {
-        const res = await axios(`${host}/api/message/${currentChat.id}`);
+        const res = await request.get(`/api/message/${currentChat.id}`);
         setMessages(res.data);
       } catch (err) {
         console.log(err);
@@ -128,7 +129,7 @@ export default memo(function Messenger() {
     });
 
     try {
-      const res = await axios.post(`${host}/api/message`, message);
+      const res = await request.post(`/api/message`, message);
       // console.log(res.data);
       setMessages([...messages, ...res.data]);
       setNewMessage("");
@@ -143,25 +144,24 @@ export default memo(function Messenger() {
     });
   }, [messages]);
 
+  // 左侧搜索
   const handleChange = debounce(() => {
     if (!search.current.value) {
       setUsers([]);
       return;
     }
-    axios
-      .get(`${host}/api/users/search/${search.current.value}`)
-      .then((res) => {
-        if (res.data.length) {
-          setUsers(res.data);
-        } else {
-          setUsers([]);
-        }
-      });
+    request.get(`/api/users/search/${search.current.value}`).then((res) => {
+      if (res.data.length) {
+        setUsers(res.data);
+      } else {
+        setUsers([]);
+      }
+    });
   }, 400);
 
   const createConversation = (u) => {
-    axios
-      .post(`${host}/api/conversations`, {
+    request
+      .post(`/api/conversations`, {
         receiverId: u.id,
       })
       .then((res) => {
